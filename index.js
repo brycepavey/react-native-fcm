@@ -91,6 +91,10 @@ FCM.cancelAllLocalNotifications = () => {
   RNFIRMessaging.cancelAllLocalNotifications();
 };
 
+FCM.getDeliveredNotifications = () => {
+  return RNFIRMessaging.getDeliveredNotifications();
+};
+
 FCM.removeDeliveredNotification = (notificationID) => {
   if (!notificationID) {
     return;

@@ -234,7 +234,7 @@ RCT_EXPORT_METHOD(getFCMToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 RCT_EXPORT_METHOD(deleteInstanceId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   [[FIRInstanceID instanceID]deleteIDWithHandler:^(NSError * _Nullable error) {
-    
+
     if (error != nil) {
       reject([NSString stringWithFormat:@"%ld",error.code],error.localizedDescription,nil);
     } else {
@@ -333,6 +333,26 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(id)data resolver:(RCTPromiseResolve
         UILocalNotification* notif = [RCTConvert UILocalNotification:data];
         [RCTSharedApplication() scheduleLocalNotification:notif];
         resolve(nil);
+    }
+}
+
+
+RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    if([UNUserNotificationCenter currentNotificationCenter] != nil) {
+        [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull unNotifs) {
+        NSMutableArray *deliveredNotifs = [[NSMutableArray alloc] init];
+            for (UNNotification *notif in unNotifs) {
+                [deliveredNotifs addObject:@{
+                    @"native_id": notif.request.identifier,
+                    @"content": notif.request.content.userInfo,
+                 }];
+            }
+            resolve(deliveredNotifs);
+        }];
+    } else {
+        NSArray *deliveredNotifs = [[NSArray alloc] init];
+        resolve(deliveredNotifs);
     }
 }
 
